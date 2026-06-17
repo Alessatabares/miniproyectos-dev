@@ -21,5 +21,4 @@
   - [ ] Capa 5 — Permisos + relación: cada pasante ve solo lo suyo (autorización
   + FK registro→usuario).
 
-  ## Dónde quedé
-  - Próximo paso: escribir el main.py de la capa 1.
+  
