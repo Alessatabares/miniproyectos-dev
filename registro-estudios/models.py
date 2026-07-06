@@ -9,3 +9,9 @@ class Registro(Base):
     fecha = Column(String)
     hora = Column(String)
     doctor = Column(String)
+
+class Usuario(Base):
+    __tablename__ = "usuarios"
+    id = Column(Integer, primary_key=True)
+    usuario = Column(String, unique=True)
+    hash_contrasena = Column(String)

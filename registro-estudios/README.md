@@ -7,7 +7,8 @@
 
   ## Cómo correr
       source .venv/bin/activate
-      python crear_db.py          # solo la 1ª vez: crea la tabla en registro_estudios.db
+      pip install bcrypt          # dependencia de la capa 3 (hashing de contraseñas)
+      python crear_db.py          # solo la 1ª vez: crea las tablas en registro_estudios.db
       uvicorn main:app --reload
       # abrir http://127.0.0.1:8000/docs
 
@@ -16,8 +17,8 @@
   codes. Datos en memoria (se pierden al reiniciar).
   - [x] Capa 2 — Base de datos (ORM): persistir con SQLite + SQLAlchemy; PK real;
   add/commit.
-  - [ ] Capa 3 — Usuarios + hashing: registro de pasantes con contraseña
-  hasheada.
+  - [x] Capa 3 — Usuarios + hashing: registro de pasantes con contraseña
+  hasheada (bcrypt + sal). La contraseña en texto plano nunca se guarda.
   - [ ] Capa 4 — Login + JWT: token y rutas protegidas (autenticación).
   - [ ] Capa 5 — Permisos + relación: cada pasante ve solo lo suyo (autorización
   + FK registro→usuario).

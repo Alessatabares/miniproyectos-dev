@@ -1,6 +1,7 @@
+import bcrypt
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from models import Registro
+from models import Registro, Usuario
 from database import SessionLocal
 
 app = FastAPI()
@@ -11,6 +12,10 @@ class RegistroIn(BaseModel):
       fecha: str
       hora: str
       doctor: str
+
+class UsuarioIn(BaseModel):
+      usuario: str
+      contrasena: str
 
 @app.post("/registros", status_code=201)
 def crear(reg: RegistroIn):
@@ -27,6 +32,20 @@ def crear(reg: RegistroIn):
       db.refresh(nuevo)
       db.close()
       return nuevo
+
+@app.post("/usuarios", status_code=201)
+def crear_usuario(user: UsuarioIn):
+      db = SessionLocal()
+      hash_bytes = bcrypt.hashpw(user.contrasena.encode(), bcrypt.gensalt())
+      nuevo_usuario = Usuario(
+            usuario=user.usuario,
+            hash_contrasena=hash_bytes.decode()
+      )
+      db.add(nuevo_usuario)   
+      db.commit()
+      db.refresh(nuevo_usuario)
+      db.close()
+      return nuevo_usuario
 
 
 @app.get("/registros")
