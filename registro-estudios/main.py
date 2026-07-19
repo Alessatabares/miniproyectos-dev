@@ -3,6 +3,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from models import Registro, Usuario
 from database import SessionLocal
+from seguridad import crear_token
 
 app = FastAPI()
 
@@ -46,6 +47,18 @@ def crear_usuario(user: UsuarioIn):
       db.refresh(nuevo_usuario)
       db.close()
       return nuevo_usuario
+
+@app.post("/login")
+def login(user: UsuarioIn):
+      db = SessionLocal()
+      usuario_db = db.query(Usuario).filter(Usuario.usuario == user.usuario).first()
+      db.close()
+      if usuario_db is None:
+          raise HTTPException(status_code=401, detail="usuario o contraseña incorrectos")
+      if not bcrypt.checkpw(user.contrasena.encode(), usuario_db.hash_contrasena.encode()):
+          raise HTTPException(status_code=401, detail="usuario o contraseña incorrectos")
+      token = crear_token({"sub": usuario_db.usuario})
+      return {"access_token": token}
 
 
 @app.get("/registros")
