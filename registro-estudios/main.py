@@ -1,11 +1,17 @@
 import bcrypt
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
 from models import Registro, Usuario
 from database import SessionLocal
-from seguridad import crear_token
+from seguridad import crear_token, verificar_token
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 app = FastAPI()
+security = HTTPBearer()
+
+def usuario_actual(cred:HTTPAuthorizationCredentials = Depends(security)):
+      datos = verificar_token(cred.credentials)
+      return datos["sub"]
 
 class RegistroIn(BaseModel):
       paciente: str
@@ -62,7 +68,7 @@ def login(user: UsuarioIn):
 
 
 @app.get("/registros")
-def listar():
+def listar(usuario: str = Depends(usuario_actual)):
       db = SessionLocal()
       registros = db.query(Registro).all()
       db.close()
